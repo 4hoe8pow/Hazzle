@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -22,21 +23,29 @@ public class StickOnCollision : MonoBehaviour
             // 三角形の回転
             Quaternion otherRotation = collision.gameObject.transform.rotation;
             Quaternion myRotation = transform.rotation;
+            float angleTotal = otherRotation.z + myRotation.z;
+            Debug.Log(angleTotal);
 
-            Debug.Log("other : " + ConvertToLessThan120(otherRotation.z));
-            Debug.Log("me : " + ConvertToLessThan120(myRotation.z));
-
+            if (AreEdgesTouching(otherRotation.z, myRotation.z)) { Debug.Log("YES"); }
             // 位置を調整してオブジェクトをくっつける
             Vector3 newPosition = transform.position;
             transform.position = newPosition;
         }
     }
 
-    public float ConvertToLessThan120(float radian)
+    public bool AreEdgesTouching(float x, float y)
     {
-        float angle = Mathf.Rad2Deg * radian; // ラジアンを角度に変換
-        float remainder = angle % 120f;
-        return remainder >= 0f ? remainder : 120f + remainder;
+        // ラジアンを角度に変換して、120 で割ったあまりを計算し、2つのあまりを足す
+        float totalMod = (ToDegrees(x) % 120) + (ToDegrees(y) % 120);
+
+        // 57以上63未満の範囲にあるかどうかをチェックして結果を返す
+        return totalMod >= 57 && totalMod < 63;
+    }
+
+    static float ToDegrees(float radians)
+    {
+        // ラジアンを度に変換する関数
+        return radians * (180.0f / (float)Math.PI);
     }
 
 }
